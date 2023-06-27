@@ -1,50 +1,68 @@
 {% extends "base.html" %}
 
 {% block head %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Page1</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Page3</title>
 {% endblock %}
 
 {% block body %}
-<!--    <div style="width: 85%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">-->
-<!--        <h2 style="text-align: center;color:rgb(99, 99, 99);">1000 random tuples</h2>-->
-<!--    </div>-->
+        <h2>Multiple charts:</h2>
+        <div id="line" style="width: 80%; height: 500px;"></div>
+        <div id="scatter" style="width: 80%; height: 500px;"></div>
 
-    <div style="height: 50vh; width: 80%; display: flex; align-items: center; justify-content: center;">
-        <label style="color:rgb(99, 99, 99);">Seconds  </label>
-		<canvas id="myChart"></canvas>
-	</div>
+        <script>
+        
+        var trace1 = {
+            x: {{ time_query | tojson }},
+            y: {{ query_time | tojson }},
+            name: 'Database',
+            type: 'scatter'
+        };
+        var trace2 = {
+            x: {{ time_query | tojson }},
+            y: {{ redis_time | tojson }},
+            name: 'redis',
+            type: 'scatter'
+        };
+        var data = [trace1, trace2];
 
-    <script>
-		const labels = {{ time_query | tojson}}.map(label => 'Trial ' + label);
+        Plotly.newPlot('line', data);
+        
 
-		const data = {
-			labels: labels,
-			datasets: [{
-				label: 'Database',
-				backgroundColor: 'rgb(255, 99, 132)',
-				borderColor: 'rgb(255, 99, 132)',
-				data: {{ query_time | tojson}},
-			}, {
-              label: 'Redis Cache',
-              backgroundColor: 'rgb(54, 162, 235)',
-              borderColor: 'rgb(54, 162, 235)',
-              data: {{ redis_time | tojson }},
-            }]
-		};
+        var trace1 = {
+          x: {{ query_time | tojson }},
+          y: {{ query_time | tojson }},
+          mode: 'markers',
+          type: 'scatter',
+          name: 'Database',
+          text: {{ time_query | tojson }},
+          marker: { size: 12 }
+        };
 
-		const config = {
-			type: 'line',
-			data: data,
-			options: { maintainAspectRatio: false}
+        var trace2 = {
+          x: {{ redis_time | tojson }},
+          y: {{ redis_time | tojson }},
+          mode: 'markers',
+          type: 'scatter',
+          name: 'Redis',
+          text: {{ time_query | tojson }},
+          marker: { size: 12 }
+        };
 
-		};
+        var data = [ trace1, trace2 ];
 
-		const myChart = new Chart(
-			document.getElementById('myChart'),
-			config
-		);
+        var layout = {
+          xaxis: {
+            range: [ 0.02, 0.08 ]
+          },
+          yaxis: {
+            range: [0.03, 0.1]
+          },
+          title:'Scatter plot'
+        };
 
-	</script>
+        Plotly.newPlot('scatter', data, layout);
+
+        </script>
 
 {% endblock %}

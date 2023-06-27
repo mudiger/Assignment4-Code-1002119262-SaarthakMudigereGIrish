@@ -51,10 +51,6 @@ def page1():
         end = time.time()
         diff = end - start
         query_time.append(diff)
-    '''
-    row = cursor.fetchall()
-    for i in row:
-        salpics.append(i)'''
 
     return render_template("1)Page.html", time_query=time_query, query_time=query_time)
 
@@ -62,7 +58,6 @@ def page1():
 @app.route("/page2/", methods=['GET', 'POST'])
 def page2():
     query_time = []
-    # salpics = []
     time_query = []
     if request.method == "POST":
         lat = request.form['lat']
@@ -79,9 +74,6 @@ def page2():
             diff = end - start
             query_time.append(diff)
 
-            '''row = cursor.fetchall()
-            for i in row:
-                salpics.append(i)'''
     return render_template("2)Page.html", time_query=time_query, query_time=query_time)
 
 
